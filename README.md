@@ -1,14 +1,14 @@
 Tensor Train Rank-1 decomposition implementation for Matlab&copy;/Octave&copy;
 ------------------------------------------------------------------------------
 
-The Tensor Train Rank-1 (TTr1) decomposition decomposes an arbitrary tensor A into a unique linear combination of orthonormal rank-1 terms. This allows for a very straightforward determination of the tensor rank as well as an easy quantification of the low-rank approximation error.
+The Tensor Train Rank-1 (TTr1) decomposition decomposes an arbitrary tensor A into a unique linear combination of orthonormal rank-1 terms. This allows for a very straightforward determination of a low-rank approximation as well as an easy quantification of the approximation error.
 
 1. Functions
 ------------
 
 * [U,S,V,sigmas]=ttr1svd(A)
 
-Use this function to compute the TTr1 decomposition. Use the singular values in sigmas to determine the tensor rank.
+Use this function to compute the TTr1 decomposition.
 
 * [Atilde,sigmas,outerprod,T]=getAtilde(U,S,V,sigmaI,n)
 
