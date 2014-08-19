@@ -36,3 +36,15 @@ outerprod'*outerprod
 
 % check whether nullspace tensors are orthogonal to original A
 norm(reshape(A,[1 prod(n)])*nullspace)
+
+% demonstrate use of leave2ind.m to determine which U,V vectors we need to reconstruct leaves
+indices=leave2ind([1 3 4],n)
+
+% odd columns of indices contain cell indices i of U{i},V{i},
+% even columns of indices contain column indices j of U{i}(:,j),V{i}(:,j)
+
+% reconstruct the first, 3rd and 4th leaf
+% first
+firstTerm=sigmas(1)*mkron(V{indices(1,1)}(:,indices(1,2)),U{indices(1,1)}(:,indices(1,2)),U{indices(1,3)}(:,indices(1,4)));
+thirdTerm=sigmas(3)*mkron(V{indices(2,1)}(:,indices(2,2)),U{indices(2,1)}(:,indices(2,2)),U{indices(2,3)}(:,indices(2,4)));
+fourthTerm=sigmas(4)*mkron(V{indices(3,1)}(:,indices(3,2)),U{indices(3,1)}(:,indices(3,2)),U{indices(3,3)}(:,indices(3,4)));

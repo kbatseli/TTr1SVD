@@ -68,9 +68,11 @@ for i=1:length(r)-1           % outer loop over the levels
         V{counter}=Vt;
         counter=counter+1;
         if rem(j,length(S{whichvcounter}))==0
+            V{whichvcounter}=[];
             whichvcounter =  whichvcounter+1;
         end
     end
+%     whichvcounter = whichvcounter+1;
 end
 
 Slevel=cell(1,length(r));   % cat each level singular values into 1 vector
