@@ -17,25 +17,24 @@ n=size(A);
 sigmas
 
 % try a rank-2 approximation
-[Atilde,s,outerprod,T]=getAtilde(U,S,V,1:2,n);
-
-% orthogonality of outer product factors
-outerprod'*outerprod
+Atilde=getAtilde(U,sigmas(1:2),V,1:2,n);
 
 % compare our approximation error with bound from singular values
 [norm(reshape(A-Atilde,[1 prod(n)])) norm(sigmas(3:end))]
 
 % try a different rank-2 approximation
-[Atilde2,s2,outerprod2,T2]=getAtilde(U,S,V,[2 4],n);
+Atilde2=getAtilde(U,sigmas([2 4]),V,[2 4],n);
 
 % compare our approximation error with bound from singular values
 [norm(reshape(A-Atilde2,[1 prod(n)])) norm(sigmas([1 3 5 6]))]
 
-% determine nullspace terms
-[Atilde3,s3,nullspace,T3]=getAtilde(U,S,V,[5 6],n);
+% determine orthonormal nullspace terms
+nullspace1=getAtilde(U,[1],V,5,n);
+nullspace2=getAtilde(U,[1],V,6,n);
 
 % check whether nullspace tensors are orthogonal to original A
-norm(reshape(A,[1 prod(n)])*nullspace)
+norm(reshape(A,[1 numel(A)])*reshape(nullspace1,[numel(A) 1]))
+norm(reshape(A,[1 numel(A)])*reshape(nullspace2,[numel(A) 1]))
 
 % demonstrate use of leave2ind.m to determine which U,V vectors we need to reconstruct leaves
 indices=leave2ind([1 3 4],n)
@@ -44,7 +43,10 @@ indices=leave2ind([1 3 4],n)
 % even columns of indices contain column indices j of U{i}(:,j),V{i}(:,j)
 
 % reconstruct the first, 3rd and 4th leaf
-% first
 firstTerm=sigmas(1)*mkron(V{indices(1,1)}(:,indices(1,2)),U{indices(1,1)}(:,indices(1,2)),U{indices(1,3)}(:,indices(1,4)));
 thirdTerm=sigmas(3)*mkron(V{indices(2,1)}(:,indices(2,2)),U{indices(2,1)}(:,indices(2,2)),U{indices(2,3)}(:,indices(2,4)));
 fourthTerm=sigmas(4)*mkron(V{indices(3,1)}(:,indices(3,2)),U{indices(3,1)}(:,indices(3,2)),U{indices(3,3)}(:,indices(3,4)));
+
+% compare to getAtilde
+Atilde3=getAtilde(U,sigmas([1 3 4]),V,[1 3 4],n);
+norm(firstTerm+thirdTerm+fourthTerm-reshape(Atilde3,[numel(A) 1]))
