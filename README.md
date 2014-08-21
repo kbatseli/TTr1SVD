@@ -10,13 +10,13 @@ The Tensor Train Rank-1 (TTr1) decomposition decomposes an arbitrary tensor A in
 
 Use this function to compute the TTr1 decomposition.
 
-* [Atilde,sigmas,outerprod,T]=getAtilde(U,S,V,sigmaI,n)
+* Atilde=getAtilde(U,sigmas,V,sigmaI,n)
 
-Use this function to compute a rank-R approximation of A from the TTr1 decomposition. Also returns the orthogonal outer product factors.
+Use this function to compute a rank-R approximation Atilde of A from the TTr1 decomposition.
 
 * demo.m
 
-Small demo that illustrates the use of ttr1svd.m and getAtilde.m.
+Small demo that illustrates the use of ttr1svd.m, getAtilde.m and leave2ind.m.
 
 2. Reference
 ------------
