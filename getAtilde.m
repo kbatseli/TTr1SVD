@@ -1,41 +1,28 @@
-function [Atilde,sigmas,outerprod,T]=getAtilde(U,S,V,sigmaI,n)
-% [Atilde,sigmas,outerprod,T]=getAtilde(U,S,V,sigmaI,n)
-% -----------------------------------------------------
+function Atilde=getAtilde(U,sigmas,V,sigmaI,n)
+% Atilde=getAtilde(U,sigmas,V,sigmaI,n)
+% -------------------------------------
 % Reconstructs a tensor as a linear combination of rank terms determined
-% from a TTr1 decomposition. Also returns the singular values and
-% orthogonal outer product factors that make up each of the rank-1 terms.
+% from a TTr1 decomposition.
 %
 % Atilde    =   tensor, the desired tensor from taking a linear combination
 %               of rank-1 terms,
 %
-% sigmas    =   vector, contains the singular values of each of the rank-1
-%               terms in the order as specified in sigmaI,
-%
-% outerprod =	matrix, each column of this matrix correponds with a
-%               unit-norm outer product factor in the order as specified in
-%               sigmaI. reshape(outerprod(:,k),n) is the rank-1 tensor
-%               corresponding with the kth outer product factor,
-%
-% T 		=	cell, contains for each rank-1 term the corresponding intermediate
-%               singular values, U and V vectors,
-%
-% polysys   =   cell containing coefficients and monomials exponents of the
-%               set of polynomial equations.
-%
 % U         =   cell, cell of U vectors obtained from the TTr1
 %               decomposition,
 %
-% S         =   cell, cell of singular values obtained from the TTr1
-%               decomposition,
+% sigmas    =   vector, contains the singular values of each of the rank-1
+%               terms in the order as specified in sigmaI,
 %
 % V         =   cell, cell of V vectors obtained from the TTr1
 %               decomposition,
 %
 % sigmaI    =   vector, contains indices of rank-1 terms that need to be
-%               used in the reconstruction,
+%               used in the reconstruction. These are the indices of the
+%               desired leaves of the last level in the TTr1-tree, counting from
+%               left to right,
 %
 % n         =   vector, dimensions of the original tensor A.
-
+%
 % Reference
 % ---------
 %
@@ -59,83 +46,53 @@ end
 endI=endI(1:end-2); 
 
 % initialize output
-T=cell(1,length(sigmaI));
-outerprod=cell(1,length(sigmaI));
 Atilde=zeros(prod(n),1);
-sigmas=zeros(1,length(sigmaI));
 
-% k(i) containst the offset of the ith term with respect to endI for
-% level d-i, initalize to sigmaI
-k=sigmaI;
-% l tells us which element of S{k(i)}(:,l(i)) we need to choose
-l=zeros(1,length(sigmaI));
+for j=1:length(sigmaI) % for each rank-1 term    
+    tempEnd=endI;
+    tempR=r;
+    k=sigmaI(j); % the offset with respect to endI for level d-i, initalize to sigmaI
 
-%% first step is different because we need to multiply with V as well!
-for j=1:length(sigmaI)
-    
-    % determine offset for each node
-    if mod(k(j),r(end))==0
-        k(j)=k(j)/r(end);
-        l(j)=r(end);
+    %% first step is different because we need to multiply with V as well!   
+    % determine new offsets
+    if mod(k,tempR(end))==0
+        k=k/tempR(end);
+        l=tempR(end);
     else
-        l(j)=mod(k(j),r(end));
-        k(j)=ceil(k(j)/r(end));
+        l=mod(k,tempR(end));
+        k=ceil(k/tempR(end));
     end
+    outerprod=kron(V{tempEnd(end)+k}(:,l),U{tempEnd(end)+k}(:,l));
     
-    T{j}{1}=S{endI(end)+k(j)}(l(j));
-    T{j}{2}=V{endI(end)+k(j)}(:,l(j));
-    T{j}{3}=U{endI(end)+k(j)}(:,l(j));
+    %% now do remaining steps
+    tempEnd=tempEnd(1:end-1);
+    tempR=tempR(1:end-1);
     
-    sigmas(j)=S{endI(end)+k(j)}(l(j));
-    outerprod{j}=kron(V{endI(end)+k(j)}(:,l(j)),U{endI(end)+k(j)}(:,l(j)));
-end
-
-%% now do remaining steps
-endI=endI(1:end-1);
-r=r(1:end-1);
-Tcounter=4;
-for i=1:length(endI)
-    
-    for j=1:length(sigmaI)
-        % determine offset for each node
-        if mod(k(j),r(end))==0
-            k(j)=k(j)/r(end);
-            l(j)=r(end);
+    for i=1:length(tempEnd)
+        % determine new offsets
+        if mod(k,tempR(end))==0
+            k=k/tempR(end);
+            l=tempR(end);
         else
-            l(j)=mod(k(j),r(end));
-            k(j)=ceil(k(j)/r(end));
-        end
-        
-        T{j}{Tcounter}=S{endI(end)+k(j)}(l(j));
-        T{j}{Tcounter+1}=U{endI(end)+k(j)}(:,l(j));
-        sigmas(j)=sigmas(j)*S{endI(end)+k(j)}(l(j));
-        outerprod{j}=kron(outerprod{j},U{endI(end)+k(j)}(:,l(j)));
-    end    
-    Tcounter=Tcounter+2;
-    endI=endI(1:end-1);
-    r=r(1:end-1);
-
-end
-
-%% last step is always first node
-for j=1:length(sigmaI)
-    
-    % determine offset for each node
-    if mod(k(j),r(end))==0
-        l(j)=r(end);
-    else
-        l(j)=mod(k(j),r(end));
+            l=mod(k,tempR(end));
+            k=ceil(k/tempR(end));
+        end        
+        outerprod=kron(outerprod,U{tempEnd(end)+k}(:,l));
+        tempEnd=tempEnd(1:end-1);
+        tempR=tempR(1:end-1);
     end
     
-    T{j}{Tcounter}=S{1}(l(j));
-    T{j}{Tcounter+1}=U{1}(:,l(j));
-    sigmas(j)=sigmas(j)*S{1}(l(j));
-    outerprod{j}=kron(outerprod{j},U{1}(:,l(j)));
+    %% last step is always first node, so k=1   
+    % determine new l-offset
+    if mod(k,tempR(end))==0
+        l=tempR(end);
+    else
+        l=mod(k,tempR(end));
+    end
+    outerprod=kron(outerprod,U{1}(:,l));
+    
+    Atilde=Atilde+sigmas(j)*outerprod;
 end
-
-% add R rank-1 terms and reshape into tensor
-outerprod=cell2mat(outerprod);
-Atilde=reshape(sum(outerprod*diag(sigmas),2),n);
+Atilde=reshape(Atilde,n);
 
 end
-
