@@ -1,7 +1,7 @@
 function [U,S,V,sigmas]=ttr1svd(A)
 % [U,S,V,sigmas]=ttr1svd(A)
 % -------------------------
-% Tensor Train rank-1 decomposition. Decomposes an arbitrary tensor A into
+% Tensor Train rank-1 singular value decomposition. Decomposes an arbitrary tensor A into
 % a linear combination of orthonormal rank-1 terms. Returns the orthogonal
 % vectors U,V and singular values S from each of the SVDs in the TTr1 tree.
 % Use the function getAtilde.m to obtain a low rank approximation using the
@@ -88,7 +88,7 @@ for i=1:length(r),             % make all singular value vectors the same size (
     Slevel{i}=kron(Slevel{i}, ones(nleaf/length(Slevel{i}),1));
 end
 
-sigmas=ones(nleaf,1);         % output singular values at each leave
+sigmas=ones(nleaf,1);         % output singular values at each leaf
 for i=1:length(r),
     sigmas=sigmas.*Slevel{i};
 end

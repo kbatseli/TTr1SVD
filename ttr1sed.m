@@ -95,7 +95,7 @@ for i=1:length(r),             % make all singular value vectors the same size (
     Slevel{i}=kron(Slevel{i}, ones(nleaf/length(Slevel{i}),1));
 end
 
-sigmas=ones(nleaf,1);         % output singular values at each leave
+sigmas=ones(nleaf,1);         % output singular values at each leaf
 for i=1:length(r),
     sigmas=sigmas.*Slevel{i};
 end
