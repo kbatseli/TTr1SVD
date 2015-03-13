@@ -91,7 +91,7 @@ for j=1:length(sigmaI) % for each rank-1 term
     end
     outerprod=kron(outerprod,U{1}(:,l));
     
-    Atilde=Atilde+sigmas(j)*outerprod;
+    Atilde=Atilde+sigmas(sigmaI(j))*outerprod;
 end
 Atilde=reshape(Atilde,n);
 
