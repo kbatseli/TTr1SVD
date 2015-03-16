@@ -28,13 +28,13 @@ Atilde2=getAtilde(U,sigmas([2 4]),V,[2 4],n);
 % compare our approximation error with bound from singular values
 [norm(reshape(A-Atilde2,[1 prod(n)])) norm(sigmas([1 3 5 6]))]
 
-% determine orthonormal nullspace terms
-nullspace1=getAtilde(U,[1],V,5,n);
-nullspace2=getAtilde(U,[1],V,6,n);
+% determine orthonormal nullspace terms: needs a sigma of value 1
+nullspace1=getAtilde(U,1,V,5,n);
+nullspace2=getAtilde(U,1,V,6,n);
 
 % check whether nullspace tensors are orthogonal to original A
-norm(reshape(A,[1 numel(A)])*reshape(nullspace1,[numel(A) 1]))
-norm(reshape(A,[1 numel(A)])*reshape(nullspace2,[numel(A) 1]))
+A(:)'*nullspace1(:)
+A(:)'*nullspace2(:)
 
 % demonstrate use of leave2ind.m to determine which U,V vectors we need to reconstruct leaves
 indices=leave2ind([1 3 4],n)
@@ -49,4 +49,4 @@ fourthTerm=sigmas(4)*mkron(V{indices(3,1)}(:,indices(3,2)),U{indices(3,1)}(:,ind
 
 % compare to getAtilde
 Atilde3=getAtilde(U,sigmas([1 3 4]),V,[1 3 4],n);
-norm(firstTerm+thirdTerm+fourthTerm-reshape(Atilde3,[numel(A) 1]))
+norm(firstTerm+thirdTerm+fourthTerm-Atilde3(:))

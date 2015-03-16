@@ -11,7 +11,9 @@ function Atilde=getAtilde(U,sigmas,V,sigmaI,n)
 %               decomposition,
 %
 % sigmas    =   vector, contains the singular values of each of the rank-1
-%               terms in the order as specified in sigmaI,
+%               terms in the order as specified in sigmaI. This is NOT
+% 				the entire sigmas vector as returned by ttr1svd.m unless
+% 				want a full reconstruction,
 %
 % V         =   cell, cell of V vectors obtained from the TTr1
 %               decomposition,
@@ -91,7 +93,7 @@ for j=1:length(sigmaI) % for each rank-1 term
     end
     outerprod=kron(outerprod,U{1}(:,l));
     
-    Atilde=Atilde+sigmas(sigmaI(j))*outerprod;
+    Atilde=Atilde+sigmas(j)*outerprod;
 end
 Atilde=reshape(Atilde,n);
 
