@@ -18,6 +18,14 @@ Use this function to compute a rank-R approximation Atilde of A from the TTr1SVD
 
 Small demo that illustrates the use of ttr1svd.m, getAtilde.m and leave2ind.m.
 
+* O=orthc(A) or O=orthc(A,tol)
+
+This function computes all outer vector products that form tensors orthogonal to A. 
+
+* ocv=verifyOrtc(A,O)
+
+Use this function to verify that all tensors that can be formed with vectors in O are orthogonal to A.
+
 2. Reference
 ------------
 
