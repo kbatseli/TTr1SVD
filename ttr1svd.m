@@ -54,8 +54,10 @@ S{1}=diag(St);
 V{1}=Vt;
 counter=2; % this counter keeps track during the iterations which V{i} we are computing. This is a linear counter that counts breadth-first
 whichvcounter=1;    % this counter keeps track during the iterations of which V we are taking the svd
+sigmas=kron(S{1}, ones(nleaf/length(S{1}),1));
 
 for i=1:length(r)-1           % outer loop over the levels
+    Slevel=[];
     for j=1:prod(r(1:i))      % inner loop over the number of svds for this level 
         if rem(j,r(i)) == 0
             col=r(i);
@@ -66,31 +68,13 @@ for i=1:length(r)-1           % outer loop over the levels
         U{counter}=Ut;
         S{counter}=diag(St);
         V{counter}=Vt;
+        Slevel=[Slevel;S{counter}];
         counter=counter+1;
         if rem(j,length(S{whichvcounter}))==0
-            V{whichvcounter}=[];
             whichvcounter =  whichvcounter+1;
         end
     end
-%     whichvcounter = whichvcounter+1;
+    Slevel=kron(Slevel, ones(nleaf/length(Slevel),1));
+    sigmas=sigmas.*Slevel;
 end
-
-Slevel=cell(1,length(r));   % cat each level singular values into 1 vector
-counter=1;
-for i=1:length(r),
-    for j=1:svdsperlevel(i),
-        Slevel{i}=[Slevel{i}; S{counter}];
-        counter=counter+1;
-    end
-end
-
-for i=1:length(r),             % make all singular value vectors the same size (number of leaves)
-    Slevel{i}=kron(Slevel{i}, ones(nleaf/length(Slevel{i}),1));
-end
-
-sigmas=ones(nleaf,1);         % output singular values at each leaf
-for i=1:length(r),
-    sigmas=sigmas.*Slevel{i};
-end
-
 end
