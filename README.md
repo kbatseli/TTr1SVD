@@ -16,7 +16,11 @@ Use this function to compute a rank-R approximation Atilde of A from the TTr1SVD
 
 * demo.m
 
-Small demo that illustrates the use of ttr1svd.m, getAtilde.m and leave2ind.m.
+Small demo that illustrates the use of most functions in this pacakge.
+
+* [S,Q]=ttr12tucker(U,sigmas,V,n)
+
+Converts a tensor A of size n in the TTr1SVD format to the Tucker (HOSVD) format. Usually results in a more sparse core S compared to traditional methods (e.g. Alternating Least Squares).
 
 * O=orthc(A) or O=orthc(A,tol)
 

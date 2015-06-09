@@ -13,8 +13,19 @@ n=size(A);
 % compute the TTr1 decomposition of A
 [U,S,V,sigmas]=ttr1svd(A);
 
-% check out sigmas
+% inspect sigmas
 sigmas
+
+% convert the TTr1 format to the Tucker (HOSVD) format
+[S,Q]=ttr12tucker(U,sigmas,V,size(A));
+
+% check orthogonality of mode vectors
+norm(Q{1}'* Q{1}-eye(3),'fro')
+norm(Q{2}'* Q{2}-eye(4),'fro')
+norm(Q{3}'* Q{3}-eye(2),'fro')
+
+% sparsity of the tensor core S in percent
+100*numel(find(S))/numel(S)
 
 % try a rank-2 approximation
 Atilde=getAtilde(U,sigmas(1:2),V,1:2,n);
