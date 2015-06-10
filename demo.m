@@ -33,6 +33,13 @@ Atilde=getAtilde(U,sigmas(1:2),V,1:2,n);
 % compare our approximation error with bound from singular values
 [norm(reshape(A-Atilde,[1 prod(n)])) norm(sigmas(3:end))]
 
+% convert the rank-2 approximation to the Tucker (HOSVD) format
+% we can keep the original U,V but need to make a new 'sigmas' vector that
+% contains only the nonzero singular values we are interested in
+sigmas2=zeros(length(sigmas),1);sigmas2(1:2)=sigmas(1:2);
+[S2,Q2]=ttr12tucker(U,sigmas2,V,size(A));
+
+
 % try a different rank-2 approximation
 Atilde2=getAtilde(U,sigmas([2 4]),V,[2 4],n);
 
