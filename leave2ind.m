@@ -21,6 +21,13 @@ function indices=leave2ind(sigmaI,n)
 % 2014, Kim Batselier, Haotian Liu, Ngai Wong
 
 d=length(n);                            % order of the tensor
+if d==2
+    % matrix case
+    indices=ones(length(sigmaI),2);
+    indices(:,2)=[1:length(sigmaI)]';
+    return
+end
+
 r=ones(1,d);                            % nodes are paired in groups of r(i) on level i-1
 nodesperlevel=ones(1,d);                % level i-1 contains nodesperlevel(i) nodes
 endI=ones(1,d);                         % endI(i) is the index of the last SVD of level i-1
